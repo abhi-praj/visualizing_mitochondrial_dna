@@ -2,7 +2,6 @@ from Bio import SeqIO
 import GC_Analysis
 
 
-
 def load_sequences(fasta_file):
     bit = []
     for record in SeqIO.parse(fasta_file, "fasta"):
@@ -28,7 +27,7 @@ sequences = load_sequences(file_path)
 # GC_Analysis.plot_gc_skew_genome_set(sequences[:10], sequence_length=1000, interval=2000)
 
 # Plot a heatmap of the GC content across various sequences of the genome for various genomes.
-GC_Analysis.gc_content_heatmap(sequences[:10], sequence_length=1000, interval=1000)
+# GC_Analysis.gc_content_heatmap(sequences[:10], sequence_length=1000, interval=1000)
 
 # Plot Cumulative GC Content across all sequences
 # GC_Analysis.cumulative_gc_content_plot(sequences[:10], sequence_length=1000)
