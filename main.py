@@ -2,6 +2,7 @@ from Bio import SeqIO
 import GC_Analysis
 
 
+
 def load_sequences(fasta_file):
     bit = []
     for record in SeqIO.parse(fasta_file, "fasta"):
