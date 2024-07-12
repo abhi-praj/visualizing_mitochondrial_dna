@@ -4,6 +4,14 @@ import seaborn as sns
 from Bio.SeqUtils import gc_fraction
 import numpy as np
 from typing import Union
+from Bio import SeqIO
+
+
+def load_sequences(fasta_file: str):
+    bit = []
+    for record in SeqIO.parse(fasta_file, "fasta"):
+        bit.append(record)
+    return bit
 
 
 def display_gcc(sequences: Union[list, str]) -> None:
@@ -92,7 +100,8 @@ def plot_gc_skew_genome_set(sequences: list,
         x_values = range(len(seq_record.seq) - sequence_length + 1)
         plt.plot(x_values, skew, label=seq_record.id)
 
-    x_ticks = list(range(0, len(sequences[0].seq) - sequence_length + 1, interval))
+    x_ticks = list(
+        range(0, len(sequences[0].seq) - sequence_length + 1, interval))
     if (len(sequences[0].seq) - sequence_length + 1) % interval != 0:
         x_ticks.append(len(sequences[0].seq) - sequence_length + 1)
 
@@ -157,17 +166,21 @@ def cumulative_gc_content_plot(sequences: Union[list, str],
         cumulative_gc = np.zeros(1)
 
         for seq_record in sequences:
-            gc_content_values = calculate_gc_content(str(seq_record.seq), sequence_length)
+            gc_content_values = calculate_gc_content(str(seq_record.seq),
+                                                     sequence_length)
             cumulative_gc = np.append(cumulative_gc, gc_content_values)
 
         cumulative_gc = cumulative_gc[1:]
     else:
         seq_record = sequences
-        cumulative_gc = calculate_gc_content(str(seq_record.seq), sequence_length)
+        cumulative_gc = calculate_gc_content(str(seq_record.seq),
+                                             sequence_length)
 
     plt.figure(figsize=(12, 6))
-    plt.plot(np.arange(len(cumulative_gc)), cumulative_gc, color='skyblue', linewidth=2)
-    plt.fill_between(np.arange(len(cumulative_gc)), cumulative_gc, color='skyblue', alpha=0.3)
+    plt.plot(np.arange(len(cumulative_gc)), cumulative_gc, color='skyblue',
+             linewidth=2)
+    plt.fill_between(np.arange(len(cumulative_gc)), cumulative_gc,
+                     color='skyblue', alpha=0.3)
     plt.title('Cumulative GC Content Plot')
     plt.xlabel('Position in Sequence')
     plt.ylabel('Cumulative GC Content')
