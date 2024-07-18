@@ -9,7 +9,7 @@ sequences = GC_Analysis.load_sequences(file_path)
 lengths_df = SeqLenDist.sequence_lengths(sequences)
 
 
-# Display the GC Content Distribution the fasta file
+# GC Content Distribution Visualizations
 # GC_Analysis.display_gcc(sequences)
 # GC_Analysis.plot_gc_skew(sequences[0], sequence_length=1000, interval=2000)
 # GC_Analysis.plot_gc_skew_genome_set(sequences[:10], sequence_length=1000, interval=2000)
