@@ -1,11 +1,39 @@
 import pandas as pd
-from Bio.SeqUtils import CodonAdaptationIndex
 import matplotlib.pyplot as plt
-import seaborn as sns
+
+codon_to_amino_acid = {
+    'GCT': 'Alanine', 'GCC': 'Alanine', 'GCA': 'Alanine', 'GCG': 'Alanine',
+    'CGT': 'Arginine', 'CGC': 'Arginine', 'CGA': 'Arginine', 'CGG': 'Arginine',
+    'AGA': 'Arginine', 'AGG': 'Arginine',
+    'AAT': 'Asparagine', 'AAC': 'Asparagine',
+    'GAT': 'Aspartic Acid', 'GAC': 'Aspartic Acid',
+    'TGT': 'Cysteine', 'TGC': 'Cysteine',
+    'CAA': 'Glutamine', 'CAG': 'Glutamine',
+    'GAA': 'Glutamic Acid', 'GAG': 'Glutamic Acid',
+    'GGT': 'Glycine', 'GGC': 'Glycine', 'GGA': 'Glycine', 'GGG': 'Glycine',
+    'CAT': 'Histidine', 'CAC': 'Histidine',
+    'ATT': 'Isoleucine', 'ATC': 'Isoleucine', 'ATA': 'Isoleucine',
+    'CTT': 'Leucine', 'CTC': 'Leucine', 'CTA': 'Leucine', 'CTG': 'Leucine',
+    'TTA': 'Leucine', 'TTG': 'Leucine',
+    'AAA': 'Lysine', 'AAG': 'Lysine',
+    'ATG': 'Methionine',
+    'TTT': 'Phenylalanine', 'TTC': 'Phenylalanine',
+    'CCT': 'Proline', 'CCC': 'Proline', 'CCA': 'Proline', 'CCG': 'Proline',
+    'TCT': 'Serine', 'TCC': 'Serine', 'TCA': 'Serine', 'TCG': 'Serine',
+    'AGT': 'Serine', 'AGC': 'Serine',
+    'ACT': 'Threonine', 'ACC': 'Threonine', 'ACA': 'Threonine',
+    'ACG': 'Threonine',
+    'TGG': 'Tryptophan',
+    'TAT': 'Tyrosine', 'TAC': 'Tyrosine',
+    'GTT': 'Valine', 'GTC': 'Valine', 'GTA': 'Valine', 'GTG': 'Valine',
+    'TAA': 'STOP', 'TAG': 'STOP', 'TGA': 'STOP'
+}
 
 
 def extract_codon_usage(sequence) -> pd.Series:
-    """Extract codon usage from a sequence and return it as a Pandas Series."""
+    """
+    Extract codon usage from a sequence and return it as a Pandas Series.
+    """
     sequence = ''.join(c for c in sequence.seq if c in 'ATCG')
 
     length = len(sequence)
@@ -13,13 +41,24 @@ def extract_codon_usage(sequence) -> pd.Series:
     if length % 3 != 0:
         new_length = length - (length % 3)
         sequence = sequence[:new_length]
-    codon_usage = CodonAdaptationIndex([sequence])
 
-    return pd.Series(codon_usage)
+    codon_counts = {}
+    for i in range(0, len(sequence), 3):
+        codon = sequence[i:i + 3]
+        if codon in codon_to_amino_acid:
+            amino_acid = codon_to_amino_acid[codon]
+            if amino_acid in codon_counts:
+                codon_counts[amino_acid] += 1
+            else:
+                codon_counts[amino_acid] = 1
+
+    return pd.Series(codon_counts)
 
 
 def create_codon_usage_df(sequences) -> pd.DataFrame:
-    """Create a DataFrame of codon usage from a list of sequences."""
+    """
+    Create a DataFrame of codon usage from a list of sequences.
+    """
     codon_usage_data = []
     for sequence in sequences:
         codon_usage_series = extract_codon_usage(sequence)
@@ -28,41 +67,23 @@ def create_codon_usage_df(sequences) -> pd.DataFrame:
 
 
 def plot_codon_usage_histogram(codon_usage_df: pd.DataFrame) -> None:
-    """Plot a histogram of codon usage."""
+    """
+    Plot a histogram of codon usage.
+    """
+    codon_usage_df.fillna(0, inplace=True)
     plt.figure(figsize=(12, 6))
     codon_usage_df.plot(kind='hist', bins=50, edgecolor='black', alpha=0.7)
-    plt.title('Histogram of Codon Usage')
-    plt.xlabel('Codon Usage')
-    plt.ylabel('Frequency')
-    plt.grid(axis='y', linestyle='--', alpha=0.7)
-    plt.show()
-
-
-def plot_codon_usage_boxplot(codon_usage_df: pd.DataFrame) -> None:
-    """Plot a boxplot of codon usage."""
-    plt.figure(figsize=(12, 6))
-    sns.boxplot(data=codon_usage_df, color='skyblue')
-    plt.title('Box Plot of Codon Usage')
-    plt.xlabel('Codon Usage')
-    plt.grid(axis='y', linestyle='--', alpha=0.7)
-    plt.show()
-
-
-def plot_codon_usage_violin_plot(codon_usage_df: pd.DataFrame) -> None:
-    """Plot a violin plot of codon usage."""
-    plt.figure(figsize=(12, 6))
-    sns.violinplot(data=codon_usage_df, color='skyblue')
-    plt.title('Violin Plot of Codon Usage')
-    plt.xlabel('Codon Usage')
+    plt.title('Histogram of Amino Acid Frequencies in Sequences')
+    plt.xlabel('Number of Occurrences of Amino Acids per Sequence')
+    plt.ylabel('Number of Sequences')
     plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.show()
 
 
 def analyze_codon_usage(sequences: list) -> None:
-    """Analyze and plot codon usage from a FASTA file."""
+    """
+    Analyze and plot codon usage from a list of sequences.
+    """
     codon_usage_df = create_codon_usage_df(sequences)
 
-    # Plot the codon usage
     plot_codon_usage_histogram(codon_usage_df)
-    plot_codon_usage_boxplot(codon_usage_df)
-    plot_codon_usage_violin_plot(codon_usage_df)
