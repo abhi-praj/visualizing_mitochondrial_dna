@@ -24,28 +24,3 @@ def plot_sequence_length_histogram(lengths_df: pd.DataFrame) -> None:
     plt.ylabel('Frequency')
     plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.show()
-
-
-def plot_sequence_length_boxplot(lengths_df: pd.DataFrame) -> None:
-    """
-    Plot a boxplot of sequence lengths.
-    """
-    plt.figure(figsize=(10, 6))
-    sns.boxplot(x=lengths_df['Length'], color='skyblue')
-    plt.title('Box Plot of Sequence Lengths')
-    plt.xlabel('Sequence Length')
-    plt.grid(axis='y', linestyle='--', alpha=0.7)
-    plt.show()
-
-
-def plot_sequence_length_violin_plot(lengths_df: pd.DataFrame) -> None:
-    """
-    Plot a violin plot of sequence lengths.
-    """
-    plt.figure(figsize=(10, 6))
-    sns.violinplot(x=lengths_df['Length'], color='skyblue')
-    plt.title('Violin Plot of Sequence Lengths')
-    plt.xlabel('Sequence Length')
-    plt.grid(axis='y', linestyle='--', alpha=0.7)
-    plt.show()
-
