@@ -6,18 +6,15 @@ from SequenceLengthDistribution import sequence_length_distribution
 from CodonUsageAnalysis import analyze_codon_usage
 from ConservedRegions import analyze_conserved_regions
 from GeneAnnotation import gene_annotation_pipeline
-from PhylogeneticTreeConstruction import \
-    phylogenetic_tree_pipeline  # Import the function for phylogenetic tree construction
+from PhylogeneticTreeConstruction import phylogenetic_tree_pipeline
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
 RESULTS_FOLDER = 'results'
 
-# Ensure upload and results directories exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(RESULTS_FOLDER, exist_ok=True)
 
-# Allowed file types
 ALLOWED_EXTENSIONS = {'fasta'}
 
 
