@@ -1,5 +1,6 @@
 from flask import Flask, request, send_file, jsonify
 import os
+from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from GC_Analysis import display_gcc
 from SequenceLengthDistribution import sequence_length_distribution
@@ -9,6 +10,7 @@ from GeneAnnotation import gene_annotation_pipeline
 from PhylogeneticTreeConstruction import phylogenetic_tree_pipeline
 
 app = Flask(__name__)
+CORS(app)
 UPLOAD_FOLDER = 'uploads'
 RESULTS_FOLDER = 'results'
 
@@ -45,7 +47,6 @@ def upload_file():
         filepath = os.path.join(UPLOAD_FOLDER, filename)
         file.save(filepath)
 
-        # Call all analysis functions here
         results = run_all_analyses(filepath)
 
         return jsonify(results)
