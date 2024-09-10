@@ -79,9 +79,8 @@ def plot_codon_usage_histogram(codon_usage_df: pd.DataFrame, output_path: str) -
     plt.ylabel('Number of Sequences')
     plt.grid(axis='y', linestyle='--', alpha=0.7)
 
-    # Save the plot as an image file
     plt.savefig(output_path)
-    plt.close()  # Close the plot to free up memory
+    plt.close()
 
 
 def analyze_codon_usage(filepath: str, output_path: str) -> None:

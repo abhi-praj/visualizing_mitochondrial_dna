@@ -46,11 +46,6 @@ const FileUpload = () => {
                         {images.sequence_length_distribution && <img src={`http://localhost:5000/download/${images.sequence_length_distribution.split("\\").pop()}`} alt="Sequence Length Distribution" />}
                         {images.codon_usage && <img src={`http://localhost:5000/download/${images.codon_usage.split("\\").pop()}`} alt="Codon Usage" />}
                         {images.conserved_regions && <img src={`http://localhost:5000/download/${images.conserved_regions.split("\\").pop()}`} alt="Conserved Regions" />}
-                        {images.phylogenetic_tree && <img src={`http://localhost:5000/download/${images.phylogenetic_tree.split("\\").pop()}`} alt="Phylogenetic Tree" />}
-                        
-                        {images.gene_annotations && images.gene_annotations.map((annotation, index) => (
-                            <img key={index} src={`http://localhost:5000/download/${annotation.split("\\").pop()}`} alt={`Gene Annotation ${index}`} />
-                        ))}
                     </div>
                 )}
             </div>

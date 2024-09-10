@@ -76,9 +76,8 @@ def plot_conserved_regions(conservation_scores: np.ndarray,
     plt.ylim(0, 1)
     plt.grid(True, linestyle='--', alpha=0.6)
 
-    # Save the plot as an image file
     plt.savefig(output_path)
-    plt.close()  # Close the plot to free up memory
+    plt.close()
 
 
 def analyze_conserved_regions(fasta_file: str, output_path_conserved: str,
@@ -97,5 +96,4 @@ def analyze_conserved_regions(fasta_file: str, output_path_conserved: str,
     alignment = load_alignment(fasta_file)
     conservation_scores = calculate_conservation(alignment)
 
-    # Save the conserved regions plot
     plot_conserved_regions(conservation_scores, color, output_path_conserved)

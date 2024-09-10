@@ -55,8 +55,8 @@ def plot_gene_annotation(sequence: SeqRecord, annotations: Dict[str, Tuple[str, 
     ax.set_xlabel('Position in Sequence')
     ax.set_title(f'Annotated Mitochondrial Genes in {sequence.id}')
     ax.grid(True, linestyle='--', alpha=0.6)
-    plt.savefig(output_path)  # Save the plot as an image file
-    plt.close()  # Close the plot to free up memory
+    plt.savefig(output_path)
+    plt.close()
 
 def gene_annotation_pipeline(fasta_file: str, output_folder: str, color: Tuple[int, int, int] = (0, 0, 255)) -> None:
     """
