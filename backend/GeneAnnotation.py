@@ -65,7 +65,6 @@ def gene_annotation_pipeline(fasta_file: str, output_folder: str, color: Tuple[i
     """
     sequences = list(SeqIO.parse(fasta_file, "fasta"))
 
-    # Process only the first 10 sequences
     for sequence in sequences[:10]:
         print(f"Processing sequence: {sequence.id}")
         annotations = annotate_genes(sequence, KNOWN_GENES)

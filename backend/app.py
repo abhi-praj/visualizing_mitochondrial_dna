@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename
 from GC_Analysis import display_gcc
 from SequenceLengthDistribution import sequence_length_distribution
 from CodonUsageAnalysis import analyze_codon_usage
-from ConservedRegions import analyze_conserved_regions
+from ConservedRegions import conserved_regions
 
 app = Flask(__name__)
 CORS(app)
@@ -48,34 +48,30 @@ def upload_file():
     return jsonify({'error': 'File not allowed'}), 400
 
 def run_all_analyses(filepath):
-    """Run all DNA analyses and save results as image files."""
+    """Run all DNA analyses and save results as HTML files."""
     results = {}
 
-    # GC Content Analysis
-    gc_image_path = os.path.join(RESULTS_FOLDER, 'gc_content.png')
-    display_gcc(filepath, gc_image_path)
-    results['gc_content'] = gc_image_path
+    gc_html_path = os.path.join(RESULTS_FOLDER, 'gc_content.html')
+    display_gcc(filepath, gc_html_path)
+    results['gc_content'] = gc_html_path
 
-    # Sequence Length Distribution Analysis
-    seq_length_image_path = os.path.join(RESULTS_FOLDER, 'sequence_length_distribution.png')
-    sequence_length_distribution(filepath, seq_length_image_path)
-    results['sequence_length_distribution'] = seq_length_image_path
+    seq_length_html_path = os.path.join(RESULTS_FOLDER, 'sequence_length_distribution.html')
+    sequence_length_distribution(filepath, seq_length_html_path)
+    results['sequence_length_distribution'] = seq_length_html_path
 
-    # Codon Usage Analysis
-    codon_usage_image_path = os.path.join(RESULTS_FOLDER, 'codon_usage.png')
-    analyze_codon_usage(filepath, codon_usage_image_path)
-    results['codon_usage'] = codon_usage_image_path
+    codon_usage_html_path = os.path.join(RESULTS_FOLDER, 'codon_usage.html')
+    analyze_codon_usage(filepath, codon_usage_html_path)
+    results['codon_usage'] = codon_usage_html_path
 
-    # Conserved Regions Analysis
-    conserved_regions_image_path = os.path.join(RESULTS_FOLDER, 'conserved_regions.png')
-    analyze_conserved_regions(filepath, conserved_regions_image_path)
-    results['conserved_regions'] = conserved_regions_image_path
+    conserved_regions_html_path = os.path.join(RESULTS_FOLDER, 'conserved_regions.html')
+    conserved_regions(filepath, conserved_regions_html_path)
+    results['conserved_regions'] = conserved_regions_html_path
 
     return results
 
 @app.route('/download/<filename>')
 def download_file(filename):
-    """Allow users to download analysis result images."""
+    """Allow users to download analysis result files."""
     return send_file(os.path.join(RESULTS_FOLDER, filename), as_attachment=True)
 
 if __name__ == '__main__':

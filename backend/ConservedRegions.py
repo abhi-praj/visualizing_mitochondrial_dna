@@ -1,7 +1,5 @@
 import os
-
-import matplotlib.pyplot as plt
-import seaborn as sns
+import plotly.graph_objects as go
 from Bio.Align import MultipleSeqAlignment
 from Bio import AlignIO
 from Bio.SeqRecord import SeqRecord
@@ -12,9 +10,7 @@ from typing import Tuple
 
 
 def preprocess_sequences(fasta_file: str, output_file: str) -> None:
-    """
-    Preprocess sequences to ensure they are of the same length.
-    """
+    """Preprocess sequences to ensure they are of the same length."""
     records = list(SeqIO.parse(fasta_file, "fasta"))
 
     min_length = min(len(record.seq) for record in records)
@@ -31,69 +27,40 @@ def preprocess_sequences(fasta_file: str, output_file: str) -> None:
 
 
 def load_alignment(fasta_file: str) -> MultipleSeqAlignment:
-    """
-    Load a multiple sequence alignment from a FASTA file.
-    """
+    """Load a multiple sequence alignment from a FASTA file."""
     temp_fasta_file = "preprocessed_conserved_" + os.path.basename(fasta_file)
     preprocess_sequences(fasta_file, temp_fasta_file)
 
     alignment = AlignIO.read(temp_fasta_file, "fasta")
+    os.remove(temp_fasta_file)
     return alignment
 
 
-def calculate_conservation(alignment: MultipleSeqAlignment) -> np.ndarray:
-    """
-    Calculate conservation at each position in the alignment.
-    """
-    num_sequences = len(alignment)
-    alignment_length = alignment.get_alignment_length()
+def plot_conserved_regions(alignment: MultipleSeqAlignment, output_image_path: str) -> None:
+    """Plot conserved regions in an alignment and save as an interactive Plotly plot."""
+    alignment_array = np.array([list(record) for record in alignment], np.character)
+    num_sequences, alignment_length = alignment_array.shape
 
-    conservation_scores = np.zeros(alignment_length)
-
+    conservation = []
     for i in range(alignment_length):
-        column = alignment[:, i]
-        most_common_residue = max(set(column), key=column.count)
-        conservation_scores[i] = column.count(
-            most_common_residue) / num_sequences
+        column = alignment_array[:, i]
+        unique, counts = np.unique(column, return_counts=True)
+        most_common_base = unique[np.argmax(counts)]
+        conservation.append(np.sum(column == most_common_base) / num_sequences)
 
-    return conservation_scores
+    fig = go.Figure(data=go.Scatter(x=np.arange(1, alignment_length + 1), y=conservation, mode='lines',
+                                    line=dict(color='royalblue', width=2)))
+    fig.update_layout(
+        title="Conservation of Genomic Regions",
+        xaxis_title="Position in Alignment",
+        yaxis_title="Proportion of Conservation",
+        template='plotly_white'
+    )
 
-
-def plot_conserved_regions(conservation_scores: np.ndarray,
-                           color: Tuple[int, int, int],
-                           output_path: str) -> None:
-    """
-    Plot the conservation scores across the sequence alignment and save the plot as an image.
-    """
-    normalized_color = tuple(c / 255 for c in color)
-
-    plt.figure(figsize=(14, 6))
-    sns.lineplot(x=range(len(conservation_scores)), y=conservation_scores,
-                 marker="o", color=normalized_color)
-    plt.title("Conserved Regions in Sequence Alignment")
-    plt.xlabel("Position in Alignment")
-    plt.ylabel("Conservation Score")
-    plt.ylim(0, 1)
-    plt.grid(True, linestyle='--', alpha=0.6)
-
-    plt.savefig(output_path)
-    plt.close()
+    fig.write_html(output_image_path)
 
 
-def analyze_conserved_regions(fasta_file: str, output_path_conserved: str,
-                              threshold: float = 0.9,
-                              color: Tuple[int, int, int] = (
-                              0, 0, 0)) -> None:
-    """
-    Analyze and plot conserved regions from a sequence alignment, and save the plot as an image.
-
-    Parameters:
-    - fasta_file: Path to the input FASTA file.
-    - output_path_conserved: Path to save the conserved regions plot.
-    - threshold: Conservation score threshold for highlighting regions (default is 0.9).
-    - color: RGB color value for the plot (default is white).
-    """
+def conserved_regions(fasta_file: str, output_image_path: str) -> None:
+    """Display conserved regions for sequences in a FASTA file."""
     alignment = load_alignment(fasta_file)
-    conservation_scores = calculate_conservation(alignment)
-
-    plot_conserved_regions(conservation_scores, color, output_path_conserved)
+    plot_conserved_regions(alignment, output_image_path)

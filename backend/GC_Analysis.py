@@ -1,6 +1,5 @@
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+import plotly.express as px
 from Bio.SeqUtils import gc_fraction
 from Bio import SeqIO
 
@@ -20,12 +19,13 @@ def display_gcc(fasta_file: str, output_image_path: str) -> None:
     gc_df = pd.DataFrame(
         {'ID': [seq.id for seq in sequences], 'GC_Content': gc_contents})
 
-    plt.figure(figsize=(10, 6))
-    sns.histplot(gc_df['GC_Content'], bins=50, kde=True, color='skyblue',
-                 edgecolor='black')
-    plt.title('Distribution of GC Content in Mitochondrial DNA Genomes')
-    plt.xlabel('GC Content Frequency')
-    plt.ylabel('m-DNA Genome Count')
-    plt.grid(axis='y', linestyle='--', alpha=0.7)
-    plt.savefig(output_image_path)
-    plt.close()
+    fig = px.histogram(gc_df, x='GC_Content', nbins=50, title="Distribution of GC Content in Mitochondrial DNA Genomes",
+                       labels={'GC_Content': 'GC Content Frequency'},
+                       template='plotly_white')
+    fig.update_layout(
+        xaxis_title="GC Content",
+        yaxis_title="Genome Count",
+        bargap=0.2
+    )
+
+    fig.write_html(output_image_path)

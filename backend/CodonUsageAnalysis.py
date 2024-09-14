@@ -1,5 +1,5 @@
 import pandas as pd
-import matplotlib.pyplot as plt
+import plotly.express as px
 from Bio import SeqIO
 
 codon_to_amino_acid = {
@@ -22,8 +22,7 @@ codon_to_amino_acid = {
     'CCT': 'Proline', 'CCC': 'Proline', 'CCA': 'Proline', 'CCG': 'Proline',
     'TCT': 'Serine', 'TCC': 'Serine', 'TCA': 'Serine', 'TCG': 'Serine',
     'AGT': 'Serine', 'AGC': 'Serine',
-    'ACT': 'Threonine', 'ACC': 'Threonine', 'ACA': 'Threonine',
-    'ACG': 'Threonine',
+    'ACT': 'Threonine', 'ACC': 'Threonine', 'ACA': 'Threonine', 'ACG': 'Threonine',
     'TGG': 'Tryptophan',
     'TAT': 'Tyrosine', 'TAC': 'Tyrosine',
     'GTT': 'Valine', 'GTC': 'Valine', 'GTA': 'Valine', 'GTG': 'Valine',
@@ -32,9 +31,7 @@ codon_to_amino_acid = {
 
 
 def extract_codon_usage(sequence) -> pd.Series:
-    """
-    Extract codon usage from a sequence and return it as a Pandas Series.
-    """
+    """Extract codon usage from a sequence and return it as a Pandas Series."""
     sequence = ''.join(c for c in sequence.seq if c in 'ATCG')
 
     length = len(sequence)
@@ -57,9 +54,7 @@ def extract_codon_usage(sequence) -> pd.Series:
 
 
 def create_codon_usage_df(sequences) -> pd.DataFrame:
-    """
-    Create a DataFrame of codon usage from a list of sequences.
-    """
+    """Create a DataFrame of codon usage from a list of sequences."""
     codon_usage_data = []
     for sequence in sequences:
         codon_usage_series = extract_codon_usage(sequence)
@@ -68,27 +63,24 @@ def create_codon_usage_df(sequences) -> pd.DataFrame:
 
 
 def plot_codon_usage_histogram(codon_usage_df: pd.DataFrame, output_path: str) -> None:
-    """
-    Plot a histogram of codon usage and save it as an image file.
-    """
+    """Plot a histogram of codon usage and save it as an interactive Plotly plot."""
     codon_usage_df.fillna(0, inplace=True)
-    plt.figure(figsize=(12, 6))
-    codon_usage_df.plot(kind='hist', bins=50, edgecolor='black', alpha=0.7)
-    plt.title('Histogram of Amino Acid Frequencies in Sequences')
-    plt.xlabel('Number of Occurrences of Amino Acids per Sequence')
-    plt.ylabel('Number of Sequences')
-    plt.grid(axis='y', linestyle='--', alpha=0.7)
 
-    plt.savefig(output_path)
-    plt.close()
+    fig = px.histogram(codon_usage_df, title="Histogram of Amino Acid Frequencies in Sequences",
+                       labels={'value': 'Number of Occurrences'},
+                       template='plotly_white')
+    fig.update_layout(
+        xaxis_title="Amino Acids",
+        yaxis_title="Number of Sequences",
+        bargap=0.2
+    )
+
+    fig.write_html(output_path)
 
 
 def analyze_codon_usage(filepath: str, output_path: str) -> None:
-    """
-    Analyze codon usage from a FASTA file and save the plot as an image.
-    """
+    """Analyze codon usage from a FASTA file and save the plot as an image."""
     sequences = list(SeqIO.parse(filepath, "fasta"))
     codon_usage_df = create_codon_usage_df(sequences)
 
-    # Save the codon usage histogram plot as an image file
     plot_codon_usage_histogram(codon_usage_df, output_path)
