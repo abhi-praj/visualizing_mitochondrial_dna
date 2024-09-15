@@ -8,7 +8,7 @@ from CodonUsageAnalysis import analyze_codon_usage
 from ConservedRegions import conserved_regions
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 UPLOAD_FOLDER = 'uploads'
 RESULTS_FOLDER = 'results'
 
@@ -72,7 +72,12 @@ def run_all_analyses(filepath):
 @app.route('/download/<filename>')
 def download_file(filename):
     """Allow users to download analysis result files."""
-    return send_file(os.path.join(RESULTS_FOLDER, filename), as_attachment=True)
+    file_path = os.path.join(RESULTS_FOLDER, filename)
+    
+    if filename.endswith('.html'):
+        return send_file(file_path, as_attachment=False, mimetype='text/html')
+    
+    return send_file(file_path, as_attachment=True)
 
 if __name__ == '__main__':
     app.run(debug=True)
